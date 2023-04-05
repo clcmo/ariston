@@ -20,10 +20,15 @@ jobs:
           with:
             java-version: '12.x'
         # Include the flutter action
-        - uses: subosito/flutter-action@v1
+        - uses: subosito/flutter-action@v2
           with:
             channel: 'stable'  
         # Get flutter packages
         - run: flutter pub get
         # Build :D 
-        - run: flutter build aar
+        - run: flutter build apk
+        # Build for iOS
+        - run: flutter build ios --release --no-codesign
+        # Build for Web
+        - run: flutter build web
+        
