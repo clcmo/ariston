@@ -152,6 +152,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "flutter_lints",
+      "rootUri": "file:///Users/calecmo/.pub-cache/hosted/pub.dartlang.org/flutter_lints-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///Users/calecmo/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -210,6 +216,12 @@
       "rootUri": "file:///Users/calecmo/.pub-cache/hosted/pub.dartlang.org/js-0.6.4",
       "packageUri": "lib/",
       "languageVersion": "2.16"
+    },
+    {
+      "name": "lints",
+      "rootUri": "file:///Users/calecmo/.pub-cache/hosted/pub.dartlang.org/lints-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "matcher",
@@ -464,7 +476,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2023-04-05T14:18:58.025748Z",
+  "generated": "2023-04-05T15:19:09.997589Z",
   "generator": "pub",
   "generatorVersion": "2.18.2"
 }
