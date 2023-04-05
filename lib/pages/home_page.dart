@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
           onTap: (page) {
             pc.animateToPage(
               page,
-              duration: Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 400),
               curve: Curves.ease,
             );
           },
