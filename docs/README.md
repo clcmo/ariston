@@ -50,7 +50,10 @@ POST ARISTON_AI_URL
 → {"reply": "texto"}
 ```
 
-O ID token do Firebase segue em `Authorization: Bearer`.
+O endpoint de produção roda em Cloudflare Workers. Para ativá-lo, siga o passo
+a passo em [CI/CD e configuração do backend](CI-CD.md#configurar-o-backend-de-ia).
+O ID token do Firebase segue em `Authorization: Bearer`; a chave Gemini fica
+como secret no Cloudflare e nunca é enviada ao navegador.
 
 ## Versões e deploy
 

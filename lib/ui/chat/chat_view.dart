@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/app_info.dart';
 import '../auth/auth_viewmodel.dart';
+import '../../config/app_info.dart';
+import '../brand/ariston_brand.dart';
 import 'chat_viewmodel.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
@@ -18,7 +19,7 @@ class ChatView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ariston'),
+        title: const AristonBrand(iconSize: 28, fontSize: 18),
         actions: [
           IconButton(
             tooltip: 'Limpar conversa',

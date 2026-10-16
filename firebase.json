@@ -1,1 +1,14 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"ariston-chat","configurations":{"web":"1:864604332994:web:09858c3275f2e50d67ac5b"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "ariston-chat",
+          "configurations": {
+            "web": "1:864604332994:web:09858c3275f2e50d67ac5b"
+          }
+        }
+      }
+    }
+  }
+}

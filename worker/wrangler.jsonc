@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ariston-chat-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-16",
+  "vars": {
+    "FIREBASE_PROJECT_ID": "ariston-chat"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

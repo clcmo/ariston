@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/app_info.dart';
-
+import '../brand/ariston_brand.dart';
 import 'auth_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
@@ -54,10 +54,17 @@ class _LoginViewState extends State<LoginView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Center(
+                      child: AristonBrand(
+                        iconSize: 48,
+                        fontSize: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Text(
-                      _isLogin ? 'Bem-vinda ao Ariston' : 'Crie sua conta',
+                      _isLogin ? 'Bem-vinda' : 'Crie sua conta',
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineMedium
+                      style: theme.textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 32),

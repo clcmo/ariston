@@ -30,9 +30,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Bem-vinda ao Ariston'), findsOneWidget);
+    expect(find.text('RISTON'), findsOneWidget);
+    expect(find.text('Bem-vinda'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).first, 'demo@example.com');
+    await tester.enterText(
+        find.byType(TextFormField).first, 'demo@example.com');
     await tester.enterText(find.byType(TextFormField).last, 'senha-demo');
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();

@@ -37,9 +37,9 @@ A versão aparece na tela de login e na tela vazia do chat.
 1. **Settings → Pages → Source:** GitHub Actions.
 2. **Settings → Actions → General → Workflow permissions:** *Read and write*
    e marcar *Allow GitHub Actions to create and approve pull requests*.
-3. **Settings → Secrets and variables → Actions → Variables:** criar
-   `ARISTON_AI_URL` com a URL do proxy de IA (é uma variável, não um secret,
-   porque o valor vai embutido no app). Sem ela, o site usa a IA simulada.
+3. Para publicar, use **Settings → Secrets and variables → Actions → Variables**
+   para criar `ARISTON_AI_URL` com a URL `/chat` do Cloudflare Worker. A URL é
+   pública e não é um segredo; a chave Gemini fica como secret no Cloudflare.
 4. A configuração web do Firebase é versionada em `lib/firebase_options.dart`.
    Para regenerá-la, execute na raiz:
 
@@ -53,6 +53,55 @@ A versão aparece na tela de login e na tela vazia do chat.
 5. *(Opcional)* Criar um PAT e salvá-lo como secret `RELEASE_PLEASE_TOKEN`:
    pushes feitos com o `GITHUB_TOKEN` não disparam outros workflows, então sem
    o PAT o `ci.yml` não roda no PR de release.
+
+## Configurar o backend de IA
+
+O endpoint `/chat` verifica o ID token do Firebase, limita o tamanho do
+histórico e consulta o Gemini 2.5 Flash. Ele roda em Cloudflare Workers no
+plano gratuito; o uso da Gemini API pode ter limites ou custos próprios.
+
+1. Crie/consulte a chave Gemini no [Google AI Studio](https://aistudio.google.com/app/apikey).
+   A chave que estava no Firebase **não é copiada automaticamente** para o
+   Cloudflare.
+2. Com Node.js 22 instalado, entre na pasta `worker` e instale as dependências:
+
+   ```bash
+   cd worker
+   npm install
+   npx wrangler login
+   ```
+
+3. Configure a chave diretamente como secret do Cloudflare. O comando pede o
+   valor oculto no terminal; não o adicione a arquivos, ao Git ou ao chat:
+
+   ```bash
+   npx wrangler secret put GEMINI_API_KEY
+   ```
+
+4. Publique o Worker:
+
+   ```bash
+   npx wrangler deploy
+   ```
+
+   O Wrangler exibirá uma URL como
+   `https://ariston-chat-api.<sua-conta>.workers.dev`. A URL da API é
+   `https://ariston-chat-api.<sua-conta>.workers.dev/chat`.
+5. Teste localmente apontando o app para a URL obtida:
+
+   ```bash
+   cd ..
+   flutter run --dart-define=ARISTON_AI_URL=https://ariston-chat-api.<sua-conta>.workers.dev/chat
+   ```
+
+6. No GitHub, crie a variável `ARISTON_AI_URL` em
+   **Settings → Secrets and variables → Actions → Variables**, com a URL
+   completa terminando em `/chat`. O próximo push na `main` publica o app
+   conectado à IA.
+
+O Worker aceita os domínios do app, exige um token Firebase válido e não expõe
+a chave Gemini ao navegador. Configure alertas/limites de uso no Google AI
+Studio e confira os limites atuais do plano Cloudflare Workers Free.
 
 ## Android/iOS
 

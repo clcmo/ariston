@@ -27,8 +27,9 @@ class FakeAiService implements AiService {
   @override
   Stream<String> streamReply(List<ChatMessage> history) async* {
     final last = history.isEmpty ? '' : history.last.text;
-    final words = 'Você disse: "$last". Esta é uma resposta simulada do Ariston.'
-        .split(' ');
+    final words =
+        'Você disse: "$last". Esta é uma resposta simulada do Ariston.'
+            .split(' ');
     for (final word in words) {
       await Future<void>.delayed(delay);
       yield '$word ';
@@ -73,9 +74,11 @@ class HttpAiService implements AiService {
         .timeout(const Duration(seconds: 60));
 
     if (response.statusCode != 200) {
-      throw AiServiceException('Erro ${response.statusCode} do servidor de IA.');
+      throw AiServiceException(
+          'Erro ${response.statusCode} do servidor de IA.');
     }
-    final data = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final data =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     yield (data['reply'] as String?) ?? '';
   }
 }
