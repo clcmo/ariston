@@ -41,7 +41,7 @@ jobs:
     outputs:
       version: ${{ steps.ver.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -72,7 +72,7 @@ jobs:
           --dart-define=APP_VERSION=${{ steps.ver.outputs.version }}
           --dart-define=ARISTON_AI_URL=${{ vars.ARISTON_AI_URL || 'https://ariston-chat-api.ariston-app.workers.dev/chat' }}
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build/web
 
@@ -82,7 +82,7 @@ jobs:
           cd build/web
           zip -rq "$GITHUB_WORKSPACE/ariston-web-${{ steps.ver.outputs.version }}.zip" .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: needs.release-please.outputs.release_created == 'true'
         with:
           name: web-zip
@@ -108,7 +108,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: web-zip
       - name: Anexar à release
