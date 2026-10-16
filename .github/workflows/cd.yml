@@ -64,13 +64,13 @@ jobs:
           echo "Versão: $VERSION"
 
       # ARISTON_AI_URL: Settings > Secrets and variables > Actions > Variables.
-      # Se não existir, o app usa o FakeAiService (respostas simuladas).
+      # A variável pode substituir o endpoint padrão publicado em workers.dev.
       - name: Build web
         run: >
           flutter build web --release
           --base-href "/${{ github.event.repository.name }}/"
           --dart-define=APP_VERSION=${{ steps.ver.outputs.version }}
-          --dart-define=ARISTON_AI_URL=${{ vars.ARISTON_AI_URL }}
+          --dart-define=ARISTON_AI_URL=${{ vars.ARISTON_AI_URL || 'https://ariston-chat-api.ariston-app.workers.dev/chat' }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

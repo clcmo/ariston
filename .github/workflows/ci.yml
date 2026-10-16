@@ -20,9 +20,17 @@ jobs:
           channel: stable
           cache: true
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos
       - run: flutter test
+      - run: npm ci --prefix worker
+      - run: npm test --prefix worker
 
       # Garante que o build web não quebra antes de chegar na main.
       - run: flutter build web --release

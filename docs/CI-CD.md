@@ -38,8 +38,10 @@ A versão aparece na tela de login e na tela vazia do chat.
 2. **Settings → Actions → General → Workflow permissions:** *Read and write*
    e marcar *Allow GitHub Actions to create and approve pull requests*.
 3. Para publicar, use **Settings → Secrets and variables → Actions → Variables**
-   para criar `ARISTON_AI_URL` com a URL `/chat` do Cloudflare Worker. A URL é
-   pública e não é um segredo; a chave Gemini fica como secret no Cloudflare.
+   para criar `ARISTON_AI_URL` com
+   `https://ariston-chat-api.ariston-app.workers.dev/chat`. A URL é pública e
+   não é um segredo; o workflow usa esse endpoint como padrão. A chave Gemini
+   fica como secret no Cloudflare.
 4. A configuração web do Firebase é versionada em `lib/firebase_options.dart`.
    Para regenerá-la, execute na raiz:
 
@@ -72,7 +74,9 @@ plano gratuito; o uso da Gemini API pode ter limites ou custos próprios.
    ```
 
 3. Configure a chave diretamente como secret do Cloudflare. O comando pede o
-   valor oculto no terminal; não o adicione a arquivos, ao Git ou ao chat:
+   valor oculto no terminal; use a chave do Google AI Studio (o secret salvo
+   no Firebase não é transferido automaticamente). Não a adicione a arquivos,
+   ao Git ou ao chat:
 
    ```bash
    npx wrangler secret put GEMINI_API_KEY
@@ -84,9 +88,9 @@ plano gratuito; o uso da Gemini API pode ter limites ou custos próprios.
    npx wrangler deploy
    ```
 
-   O Wrangler exibirá uma URL como
-   `https://ariston-chat-api.<sua-conta>.workers.dev`. A URL da API é
-   `https://ariston-chat-api.<sua-conta>.workers.dev/chat`.
+   A URL publicada deste projeto é
+   `https://ariston-chat-api.ariston-app.workers.dev`; a URL da API termina
+   em `/chat`.
 5. Teste localmente apontando o app para a URL obtida:
 
    ```bash
@@ -94,10 +98,11 @@ plano gratuito; o uso da Gemini API pode ter limites ou custos próprios.
    flutter run --dart-define=ARISTON_AI_URL=https://ariston-chat-api.<sua-conta>.workers.dev/chat
    ```
 
-6. No GitHub, crie a variável `ARISTON_AI_URL` em
-   **Settings → Secrets and variables → Actions → Variables**, com a URL
-   completa terminando em `/chat`. O próximo push na `main` publica o app
-   conectado à IA.
+6. O workflow já usa
+   `https://ariston-chat-api.ariston-app.workers.dev/chat` como padrão. Se
+   necessário, substitua-o pela variável `ARISTON_AI_URL` em **Settings →
+   Secrets and variables → Actions → Variables**. O próximo push na `main`
+   publica o app conectado à IA.
 
 O Worker aceita os domínios do app, exige um token Firebase válido e não expõe
 a chave Gemini ao navegador. Configure alertas/limites de uso no Google AI
