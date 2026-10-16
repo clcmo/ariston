@@ -12,23 +12,29 @@ import 'data/services/chat_history_store.dart';
 import 'firebase_options.dart';
 import 'ui/auth/auth_viewmodel.dart';
 
-/// URL do seu backend/proxy de IA. Passe na execução:
-///   flutter run --dart-define=ARISTON_AI_URL=https://seu-proxy.exemplo/chat
-/// Sem ela, o app usa o FakeAiService (respostas simuladas).
 const _aiUrl = String.fromEnvironment('ARISTON_AI_URL');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveConfig.start();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  try {
+    await HiveConfig.start();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    runApp(StartupErrorApp(message: '$e'));
+    return;
+  }
 
   final authService = AuthService();
-  final AiService ai = _aiUrl.isEmpty
-      ? const FakeAiService()
-      : HttpAiService(
+  // Só usa o proxy se a URL for http(s); caso contrário, IA simulada.
+  final AiService ai = _aiUrl.startsWith('http')
+      ? HttpAiService(
           endpoint: Uri.parse(_aiUrl),
           tokenProvider: authService.getIdToken,
-        );
+        )
+      : const FakeAiService();
 
   runApp(
     MultiProvider(
@@ -49,4 +55,22 @@ Future<void> main() async {
       child: const AristonApp(),
     ),
   );
+}
+
+class StartupErrorApp extends StatelessWidget {
+  const StartupErrorApp({super.key, required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: SelectableText('Erro ao iniciar o Ariston:\n\n$message'),
+            ),
+          ),
+        ),
+      );
 }
