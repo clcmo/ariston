@@ -13,23 +13,27 @@ import 'firebase_options.dart';
 import 'ui/auth/auth_viewmodel.dart';
 
 const _aiUrl = String.fromEnvironment('ARISTON_AI_URL');
+const _demoMode = bool.fromEnvironment('ARISTON_DEMO_MODE');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     await HiveConfig.start();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (!_demoMode) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
   } catch (e) {
     runApp(StartupErrorApp(message: '$e'));
     return;
   }
 
-  final authService = AuthService();
+  final AuthService authService =
+      _demoMode ? DemoAuthService() : FirebaseAuthService();
   // Só usa o proxy se a URL for http(s); caso contrário, IA simulada.
-  final AiService ai = _aiUrl.startsWith('http')
+  final AiService ai = !_demoMode && _aiUrl.startsWith('http')
       ? HttpAiService(
           endpoint: Uri.parse(_aiUrl),
           tokenProvider: authService.getIdToken,

@@ -40,8 +40,16 @@ A versão aparece na tela de login e na tela vazia do chat.
 3. **Settings → Secrets and variables → Actions → Variables:** criar
    `ARISTON_AI_URL` com a URL do proxy de IA (é uma variável, não um secret,
    porque o valor vai embutido no app). Sem ela, o site usa a IA simulada.
-4. Firebase Console → Authentication → Settings → Authorized domains:
-   adicionar `clcmo.github.io`.
+4. A configuração web do Firebase é versionada em `lib/firebase_options.dart`.
+   Para regenerá-la, execute na raiz:
+
+   ```bash
+   flutterfire configure --project=ariston-chat --platforms=web
+   ```
+
+   No Firebase Console → Authentication → Settings → Authorized domains,
+   autorize os hosts usados para acessar o app, sem protocolo ou caminho:
+   `clcmo.github.io` e `dev.camilaloliveira.me`.
 5. *(Opcional)* Criar um PAT e salvá-lo como secret `RELEASE_PLEASE_TOKEN`:
    pushes feitos com o `GITHUB_TOKEN` não disparam outros workflows, então sem
    o PAT o `ci.yml` não roda no PR de release.

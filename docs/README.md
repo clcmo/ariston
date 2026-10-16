@@ -33,9 +33,14 @@ lib/
 flutterfire configure          # gera lib/firebase_options.dart (uma vez)
 flutter pub get
 flutter run                    # IA simulada (FakeAiService)
+flutter run --dart-define=ARISTON_DEMO_MODE=true  # interface sem Firebase
 flutter run --dart-define=ARISTON_AI_URL=https://seu-proxy/chat   # IA real
 flutter test
 ```
+
+No modo demo, o Firebase é ignorado, qualquer email e senha não vazios entram
+e a IA responde com mensagens simuladas. O modo é opt-in e não altera o build
+normal, que continua exigindo a configuração gerada pelo `flutterfire configure`.
 
 A chave da API de IA **nunca** vai no app: ela fica no proxy. Contrato esperado:
 

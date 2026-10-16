@@ -15,14 +15,14 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   final AuthService _service;
-  late final StreamSubscription<User?> _sub;
+  late final StreamSubscription<AuthUser?> _sub;
 
-  User? _user;
+  AuthUser? _user;
   bool _isInitializing = true;
   bool _isLoading = false;
   String? _errorMessage;
 
-  User? get user => _user;
+  AuthUser? get user => _user;
   bool get isInitializing => _isInitializing;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
