@@ -1,6 +1,13 @@
 # Ariston
 
-Chatbot com IA em Flutter (Android, iOS e web), arquitetura **MVVM**.
+Chatbot com IA em Flutter para Android, iOS e web, com arquitetura **MVVM**.
+
+[![GitHub license](https://img.shields.io/github/license/clcmo/ariston?style=for-the-badge)](https://github.com/clcmo/ariston)
+[![GitHub stars](https://img.shields.io/github/stars/clcmo/ariston?style=for-the-badge)](https://github.com/clcmo/ariston/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/clcmo/ariston?style=for-the-badge)](https://github.com/clcmo/ariston/network)
+[![GitHub issues](https://img.shields.io/github/issues/clcmo/ariston?style=for-the-badge)](https://github.com/clcmo/ariston/issues)
+[![GitHub donate](https://img.shields.io/github/sponsors/clcmo?color=pink&style=for-the-badge)](https://github.com/sponsors/clcmo)
+
 
 [![CI](https://github.com/clcmo/ariston/actions/workflows/ci.yml/badge.svg)](https://github.com/clcmo/ariston/actions/workflows/ci.yml)
 [![CD](https://github.com/clcmo/ariston/actions/workflows/cd.yml/badge.svg)](https://github.com/clcmo/ariston/actions/workflows/cd.yml)
@@ -29,35 +36,61 @@ lib/
 
 ## Rodando
 
+Configure o Firebase Web uma vez (se `lib/firebase_options.dart` ainda não
+estiver configurado) e instale as dependências:
+
 ```bash
-flutterfire configure          # gera lib/firebase_options.dart (uma vez)
+flutterfire configure --project=ariston-chat --platforms=web
 flutter pub get
-flutter run                    # IA simulada (FakeAiService)
-flutter run --dart-define=ARISTON_DEMO_MODE=true  # interface sem Firebase
-flutter run --dart-define=ARISTON_AI_URL=https://seu-proxy/chat   # IA real
+```
+
+Para executar o app:
+
+```bash
+flutter run
+```
+
+Sem `ARISTON_AI_URL`, o app usa respostas simuladas (`FakeAiService`). Para
+conversar com a IA do Cloudflare pelo Worker de produção:
+
+```bash
+flutter run \
+  --dart-define=ARISTON_AI_URL=https://ariston-chat-api.ariston-app.workers.dev/chat
+```
+
+Esse modo requer que o usuário entre com uma conta Firebase válida. Para
+experimentar a interface sem Firebase ou backend:
+
+```bash
+flutter run --dart-define=ARISTON_DEMO_MODE=true
+```
+
+O modo demo aceita qualquer email e senha não vazios e sempre usa respostas
+simuladas. Ele é opt-in e não altera o build normal, que requer a configuração
+gerada pelo `flutterfire configure`.
+
+Para executar os testes:
+
+```bash
 flutter test
 ```
 
-No modo demo, o Firebase é ignorado, qualquer email e senha não vazios entram
-e a IA responde com mensagens simuladas. O modo é opt-in e não altera o build
-normal, que continua exigindo a configuração gerada pelo `flutterfire configure`.
+## Backend de IA
 
-A chave da API de IA **nunca** vai no app: ela fica no proxy. Contrato esperado:
+O app envia o histórico de mensagens ao endpoint `/chat` do **Cloudflare
+Worker**. O Worker valida o ID token do Firebase e encaminha a conversa para
+um modelo do Cloudflare Workers AI usando o binding `AI` configurado no Worker.
+Não é necessária uma chave externa de provedor de IA no app.
 
-```
-POST ARISTON_AI_URL
-{"messages": [{"role": "user" | "assistant", "content": "..."}]}
-→ {"reply": "texto"}
-```
-
-O endpoint de produção roda em Cloudflare Workers. Para ativá-lo, siga o passo
-a passo em [CI/CD e configuração do backend](CI-CD.md#configurar-o-backend-de-ia).
-O ID token do Firebase segue em `Authorization: Bearer`; a chave Gemini fica
-como secret no Cloudflare e nunca é enviada ao navegador.
+O endpoint de produção é
+`https://ariston-chat-api.ariston-app.workers.dev/chat`. O app envia o ID token
+do Firebase no cabeçalho `Authorization: Bearer`. Para publicar o Worker ou
+substituir a URL usada no deploy, siga
+[CI/CD e configuração do backend](./CI-CD.md#configurar-o-backend-de-ia).
 
 ## Versões e deploy
 
-Veja [docs/CI-CD.md](docs/CI-CD.md). Resumo: use *Conventional Commits*
+Veja [CI/CD](./CI-CD.md). Resumo: use *Conventional Commits*
 (`feat:`, `fix:`, `feat!:`); o CI abre um PR de release com a nova versão e o
 changelog; ao mergeá-lo, a release é criada e o site é atualizado.
 
