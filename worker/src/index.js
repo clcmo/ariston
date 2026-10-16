@@ -115,7 +115,7 @@ export function createWorker({verifyToken, generateReply}) {
       }
 
       try {
-        const reply = await generateReply(body.messages, env.GEMINI_API_KEY);
+        const reply = await generateReply(body.messages, env);
         if (typeof reply !== 'string' || reply.trim().length === 0) {
           return jsonResponse(
             {error: 'A IA não retornou uma resposta.'},
@@ -124,8 +124,8 @@ export function createWorker({verifyToken, generateReply}) {
           );
         }
         return jsonResponse({reply}, 200, corsHeaders);
-      } catch (_) {
-        console.error(`Falha ao consultar IA para o usuário ${user.uid}.`);
+      } catch (err) {
+        console.error(`Falha ao consultar IA para o usuário ${user.uid}.`, err.message);
         return jsonResponse(
           {error: 'Não foi possível obter uma resposta da IA.'},
           502,
@@ -136,47 +136,25 @@ export function createWorker({verifyToken, generateReply}) {
   };
 }
 
-const endpoint =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
-
-async function generateGeminiReply(messages, apiKey) {
-  if (!apiKey) {
-    throw new Error('O secret GEMINI_API_KEY não está configurado.');
-  }
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey,
+async function generateWorkersAiReply(messages, env) {
+  const aiMessages = [
+    {
+      role: 'system',
+      content: 'Você é Ariston, uma assistente útil e acolhedora. Responda em português brasileiro, a menos que a pessoa prefira outro idioma.',
     },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{
-          text: 'Você é Ariston, uma assistente útil e acolhedora. Responda em português brasileiro, a menos que a pessoa prefira outro idioma.',
-        }],
-      },
-      contents: messages.map(({role, content}) => ({
-        role: role === 'assistant' ? 'model' : 'user',
-        parts: [{text: content}],
-      })),
-      generationConfig: {
-        maxOutputTokens: 512,
-        temperature: 0.7,
-      },
-    }),
-    signal: AbortSignal.timeout(45000),
+    ...messages.map(({role, content}) => ({
+      role: role === 'assistant' ? 'assistant' : 'user',
+      content,
+    })),
+  ];
+
+  const response = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+    messages: aiMessages,
+    max_tokens: 512,
+    temperature: 0.7,
   });
 
-  if (!response.ok) {
-    console.error(`Gemini respondeu com status ${response.status}.`);
-    throw new Error('Falha no provedor de IA.');
-  }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts
-    ?.map((part) => part.text || '')
-    .join('');
+  return response.response;
 }
 
 async function verifyFirebaseToken(token, projectId) {
@@ -203,5 +181,5 @@ async function verifyFirebaseToken(token, projectId) {
 
 export default createWorker({
   verifyToken: verifyFirebaseToken,
-  generateReply: generateGeminiReply,
+  generateReply: generateWorkersAiReply,
 });

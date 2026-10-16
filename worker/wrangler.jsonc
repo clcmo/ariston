@@ -3,6 +3,9 @@
   "name": "ariston-chat-api",
   "main": "src/index.js",
   "compatibility_date": "2026-10-16",
+  "ai": {
+    "binding": "AI"
+  },
   "vars": {
     "FIREBASE_PROJECT_ID": "ariston-chat"
   },
