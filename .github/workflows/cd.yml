@@ -1,0 +1,120 @@
+name: CD
+
+# A cada push na main:
+#   1. release-please abre/atualiza o "PR de release" (versão + CHANGELOG)
+#      e, quando esse PR é mergeado, cria a tag e a GitHub Release.
+#   2. O app web é compilado com a versão embutida e publicado no GitHub Pages.
+#   3. Se houve release, o zip do build web é anexado a ela.
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: cd
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.rp.outputs.release_created }}
+      tag_name: ${{ steps.rp.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: rp
+        with:
+          # Opcional: com um PAT em RELEASE_PLEASE_TOKEN, o CI também roda no PR de release.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build-web:
+    needs: release-please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter test
+
+      - name: Definir versão
+        id: ver
+        run: |
+          BASE=$(jq -r '."."' .release-please-manifest.json)
+          if [ "${{ needs.release-please.outputs.release_created }}" = "true" ]; then
+            VERSION="$BASE"
+          else
+            VERSION="$BASE-dev+${GITHUB_SHA::7}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Versão: $VERSION"
+
+      # ARISTON_AI_URL: Settings > Secrets and variables > Actions > Variables.
+      # Se não existir, o app usa o FakeAiService (respostas simuladas).
+      - name: Build web
+        run: >
+          flutter build web --release
+          --base-href "/${{ github.event.repository.name }}/"
+          --dart-define=APP_VERSION=${{ steps.ver.outputs.version }}
+          --dart-define=ARISTON_AI_URL=${{ vars.ARISTON_AI_URL }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Zip do build web
+        if: needs.release-please.outputs.release_created == 'true'
+        run: |
+          cd build/web
+          zip -rq "$GITHUB_WORKSPACE/ariston-web-${{ steps.ver.outputs.version }}.zip" .
+
+      - uses: actions/upload-artifact@v4
+        if: needs.release-please.outputs.release_created == 'true'
+        with:
+          name: web-zip
+          path: ariston-web-*.zip
+
+  deploy-pages:
+    needs: build-web
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  attach-to-release:
+    needs: [release-please, build-web]
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-zip
+      - name: Anexar à release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release upload "${{ needs.release-please.outputs.tag_name }}"
+          ariston-web-*.zip
+          --repo "${{ github.repository }}" --clobber
