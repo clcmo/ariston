@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/clcmo/ariston/compare/ariston-v0.5.0...ariston-v0.6.0) (2026-10-17)
+
+
+### Features
+
+* **auth:** integrate Google Sign-In and update authentication services ([8cfb5df](https://github.com/clcmo/ariston/commit/8cfb5df97771a3f3422eb6154f8daf1cb3f3ce8f))
+* **auth:** integrate Google Sign-In and update authentication services ([#25](https://github.com/clcmo/ariston/issues/25)) ([00e3cfc](https://github.com/clcmo/ariston/commit/00e3cfcbab7812343350e9263e93af935f802986))
+
 ## [0.5.0](https://github.com/clcmo/ariston/compare/ariston-v0.4.0...ariston-v0.5.0) (2026-10-17)
 
 
