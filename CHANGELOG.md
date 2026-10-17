@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/clcmo/ariston/compare/ariston-v0.3.0...ariston-v0.4.0) (2026-10-17)
+
+
+### Features
+
+* add script to create initial labels and issues for Ariston roadmap ([bd70c27](https://github.com/clcmo/ariston/commit/bd70c271b6a40c57cd24becc26dc2b307b6bd414))
+* add script to create initial labels and issues for Ariston roadmap ([#18](https://github.com/clcmo/ariston/issues/18)) ([cb9e6f0](https://github.com/clcmo/ariston/commit/cb9e6f0446077053532c1cebb521527b63842661))
+
 ## [0.3.0](https://github.com/clcmo/ariston/compare/ariston-v0.2.0...ariston-v0.3.0) (2026-10-17)
 
 
