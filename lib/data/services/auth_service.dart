@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthUser {
   const AuthUser({required this.uid});
@@ -22,10 +20,13 @@ abstract interface class AuthService {
 }
 
 class FirebaseAuthService implements AuthService {
-  FirebaseAuthService({FirebaseAuth? auth})
-      : _auth = auth ?? FirebaseAuth.instance;
+  FirebaseAuthService({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
+      : _auth = auth ?? FirebaseAuth.instance,
+        // Na v7+, injetamos a instância Singleton caso não seja fornecida uma de teste
+        _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
 
   final FirebaseAuth _auth;
+  final GoogleSignIn _googleSignIn;
 
   @override
   Stream<AuthUser?> get authStateChanges => _auth
@@ -40,18 +41,38 @@ class FirebaseAuthService implements AuthService {
   Future<void> register(String email, String password) =>
       _auth.createUserWithEmailAndPassword(email: email, password: password);
 
-  @override
+    @override
   Future<void> signInWithGoogle() async {
-    final provider = GoogleAuthProvider();
-    if (kIsWeb) {
-      await _auth.signInWithPopup(provider);
-    } else {
-      await _auth.signInWithProvider(provider);
-    }
+    // 1. Inicializa o Singleton padrão do pacote v7+
+    await _googleSignIn.initialize();
+
+    // 2. Realiza a identificação do usuário
+    final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+    if (googleUser == null) return; 
+
+    // 3. Obtém o idToken (Identidade)
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    // 4. Solicita explicitamente o escopo para capturar o accessToken (Autorização)
+    final List<String> scopes = ['email', 'profile'];
+    final clientAuth = await googleUser.authorizationClient.authorizeScopes(scopes);
+
+    // 5. Cria a credencial para o Firebase cruzando os dois tokens exigidos
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: clientAuth.accessToken, // Token extraído da nova camada de escopo
+      idToken: googleAuth.idToken,
+    );
+
+    // 6. Realiza o login final no Firebase
+    await _auth.signInWithCredential(credential);
   }
 
+
   @override
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
 
   @override
   Future<String?> getIdToken() async => _auth.currentUser?.getIdToken();
