@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/clcmo/ariston/compare/ariston-v0.2.0...ariston-v0.3.0) (2026-10-17)
+
+
+### Features
+
+* add new issue templates for bug reports, feature requests, and tasks ([#16](https://github.com/clcmo/ariston/issues/16)) ([0fce9f9](https://github.com/clcmo/ariston/commit/0fce9f91602984945c9bbc71f417ff094e105b4f))
+
 ## [0.2.0](https://github.com/clcmo/ariston/compare/ariston-v0.1.0...ariston-v0.2.0) (2026-10-16)
 
 
