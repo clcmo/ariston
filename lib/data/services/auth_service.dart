@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 class AuthUser {
   const AuthUser({required this.uid});
 
@@ -14,6 +16,7 @@ abstract interface class AuthService {
 
   Future<void> signIn(String email, String password);
   Future<void> register(String email, String password);
+  Future<void> signInWithGoogle();
   Future<void> signOut();
   Future<String?> getIdToken();
 }
@@ -36,6 +39,16 @@ class FirebaseAuthService implements AuthService {
   @override
   Future<void> register(String email, String password) =>
       _auth.createUserWithEmailAndPassword(email: email, password: password);
+
+  @override
+  Future<void> signInWithGoogle() async {
+    final provider = GoogleAuthProvider();
+    if (kIsWeb) {
+      await _auth.signInWithPopup(provider);
+    } else {
+      await _auth.signInWithProvider(provider);
+    }
+  }
 
   @override
   Future<void> signOut() => _auth.signOut();
@@ -63,6 +76,12 @@ class DemoAuthService implements AuthService {
   @override
   Future<void> register(String email, String password) async {
     _authenticate(email, password);
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {
+    _user = const AuthUser(uid: 'demo-google');
+    _authStateController.add(_user);
   }
 
   void _authenticate(String email, String password) {

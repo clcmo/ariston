@@ -33,6 +33,8 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> register(String email, String password) =>
       _run(() => _service.register(email, password));
 
+  Future<void> loginWithGoogle() => _run(() => _service.signInWithGoogle());
+
   Future<void> logout() => _service.signOut();
 
   void clearError() {
@@ -48,7 +50,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       await action();
     } on FirebaseAuthException catch (e) {
-      _errorMessage = _messageFor(e.code);
+      if (!_isCancellation(e.code)) _errorMessage = _messageFor(e.code);
     } catch (_) {
       _errorMessage = 'Algo deu errado. Tente novamente.';
     } finally {
@@ -56,6 +58,12 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  bool _isCancellation(String code) =>
+      code == 'popup-closed-by-user' ||
+      code == 'cancelled-popup-request' ||
+      code == 'canceled' ||
+      code == 'web-context-canceled';
 
   String _messageFor(String code) {
     switch (code) {
@@ -72,6 +80,10 @@ class AuthViewModel extends ChangeNotifier {
         return 'Email ou senha incorretos.';
       case 'network-request-failed':
         return 'Sem conexão. Verifique sua internet.';
+      case 'account-exists-with-different-credential':
+        return 'Este email já está cadastrado com outro método de login.';
+      case 'popup-blocked':
+        return 'O navegador bloqueou a janela de login. Libere pop-ups e tente de novo.';
       default:
         return 'Não foi possível autenticar. Tente novamente.';
     }
