@@ -1,7 +1,7 @@
 name: ariston
 description: Ariston — chatbot com IA em Flutter, arquitetura MVVM.
 publish_to: none
-version: 0.2.0
+version: 0.3.0
 environment:
   sdk: '>=3.4.0 <4.0.0'
 dependencies:
@@ -19,6 +19,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-
 flutter:
   uses-material-design: true
