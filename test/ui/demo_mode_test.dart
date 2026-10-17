@@ -7,6 +7,7 @@ import 'package:ariston/ui/auth/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:ariston/ui/brand/ariston_brand.dart';
 
 void main() {
   testWidgets('demo auth opens the chat without Firebase', (tester) async {
@@ -30,7 +31,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('RISTON'), findsOneWidget);
+    expect(find.byType(AristonLogo), findsOneWidget);
     expect(find.text('Bem-vinda'), findsOneWidget);
 
     await tester.enterText(

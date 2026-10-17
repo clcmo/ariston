@@ -19,7 +19,7 @@ class ChatView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AristonBrand(iconSize: 28, fontSize: 18),
+        title: const AristonLogo(width: 120),
         actions: [
           IconButton(
             tooltip: 'Limpar conversa',
