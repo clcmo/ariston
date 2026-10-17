@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/clcmo/ariston/compare/ariston-v0.4.0...ariston-v0.5.0) (2026-10-17)
+
+
+### Features
+
+* **auth:** add Google sign-in functionality and update UI components ([67d6ba5](https://github.com/clcmo/ariston/commit/67d6ba577619e58fecafbf310dee5745b42fef46))
+* **ui:** update chat view to use AristonLogo and adjust demo mode test ([df75a42](https://github.com/clcmo/ariston/commit/df75a42bfb699a82ec8ef400907ad789ee3eb147))
+
 ## [0.4.0](https://github.com/clcmo/ariston/compare/ariston-v0.3.0...ariston-v0.4.0) (2026-10-17)
 
 
