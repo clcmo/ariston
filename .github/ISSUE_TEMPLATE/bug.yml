@@ -1,0 +1,48 @@
+name: Bug
+description: Algo não funciona como esperado
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: o-que-aconteceu
+    attributes:
+      label: O que aconteceu?
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Passos para reproduzir
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamento esperado
+    validations:
+      required: true
+  - type: dropdown
+    id: plataforma
+    attributes:
+      label: Plataforma
+      options:
+        - Web (GitHub Pages)
+        - Android
+        - iOS
+        - Desktop (Linux/macOS/Windows)
+    validations:
+      required: true
+  - type: textarea
+    id: ambiente
+    attributes:
+      label: Ambiente
+      description: Saída de `flutter --version` e, se for web, o navegador.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou capturas de tela
+      render: shell
