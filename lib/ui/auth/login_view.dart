@@ -54,12 +54,7 @@ class _LoginViewState extends State<LoginView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(
-                      child: AristonBrand(
-                        iconSize: 48,
-                        fontSize: 32,
-                      ),
-                    ),
+                    const Center(child: AristonLogo(width: 240)),
                     const SizedBox(height: 12),
                     Text(
                       _isLogin ? 'Bem-vinda' : 'Crie sua conta',
@@ -110,6 +105,26 @@ class _LoginViewState extends State<LoginView> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Text(_isLogin ? 'Entrar' : 'Cadastrar'),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        const Expanded(child: Divider()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('ou', style: theme.textTheme.bodySmall),
+                        ),
+                        const Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: vm.isLoading ? null : vm.loginWithGoogle,
+                      icon: Image.asset('assets/brand/google_g.png',
+                          width: 20, height: 20),
+                      label: const Text('Continuar com o Google'),
+                      style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48)),
                     ),
                     TextButton(
                       onPressed: () {

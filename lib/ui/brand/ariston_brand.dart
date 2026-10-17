@@ -76,3 +76,33 @@ class _AristonGlyphPainter extends CustomPainter {
   bool shouldRepaint(_AristonGlyphPainter oldDelegate) =>
       oldDelegate.color != color;
 }
+
+/// Marca oficial em PNG: âmbar no tema escuro, roxa no claro.
+class AristonLogo extends StatelessWidget {
+  const AristonLogo({super.key, this.width = 220});
+
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final asset = dark
+        ? 'assets/brand/ariston_ambar.png'
+        : 'assets/brand/ariston_roxo.png';
+
+    // Os PNGs são quadrados com muita margem; recorta ao redor da marca.
+    return Semantics(
+      label: 'Ariston',
+      image: true,
+      child: ExcludeSemantics(
+        child: ClipRect(
+          child: Align(
+            widthFactor: 0.58,
+            heightFactor: 0.18,
+            child: Image.asset(asset, width: width / 0.58),
+          ),
+        ),
+      ),
+    );
+  }
+}
